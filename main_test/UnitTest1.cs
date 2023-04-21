@@ -91,6 +91,43 @@ namespace main{
             }
             return rings;
         }
+        static List<List<int>> matrix_from_rings(List<List<int>> matrix, List<List<int>> rings)
+        {
+            var x = matrix[0].Count;
+            var y = matrix.Count;
+            // reassemble matrix circularly
+            for (int i = 0; i < rings.Count; i++)
+            {
+                // add last row - 1 in reverse 
+                for (int j = i; x - 1 - i > j; j++)
+                {
+                    matrix[i][j] = rings[i].Last();
+                    rings[i].Remove(rings[i].Count - 1);
+                }
+
+                // add last column - 1
+                for (int j = y - 1 - i; j > i; j--)
+                {
+                    matrix[j][x - i - 1] = rings[i].Last();
+                    rings[i].RemoveAt(rings[i].Count - 1);
+                }
+
+                // add first row - 1
+                for (int j = x - i - 1; j > i; j--)
+                {
+                    matrix[y - i - 1][j] = rings[i].Last();
+                    rings[i].RemoveAt(rings[i].Count - 1);
+                }
+
+                // add first column - 1
+                for (int j = i; j < y - i - 1; j++)
+                {
+                    matrix[j][i] = rings[i].Last();
+                    rings[i].RemoveAt(rings[i].Count - 1);
+                }
+            }
+            return matrix;
+        }
         public static void matrixRotation(List<List<int>> matrix, int r)
         {
             if (matrix.Count == 0) return;
@@ -104,31 +141,7 @@ namespace main{
             rings = rings_from_matrix_second(matrix, rings);
             
             rings = rotate_rings(rings, r);
-            // reassemble matrix row by row
-            for (int i = 0; i < matrix.Count / 2; i++)
-            {
-                // add first row
-                for (int j = i; j < matrix[i].Count - i; j++)
-                {
-                    matrix[i][j] = rings[i][j];
-                    rings[i].RemoveAt(j);
-                }
-                // add last column
-                for (int j = i + 1; j < matrix.Count - i; j++)
-                {
-                    matrix[j][matrix.Count - i - 1] = rings[i][j];
-                }
-                // add last row in reverse
-                for (int j = matrix.Count - i - 2; j >= i; j--)
-                {
-                    matrix[matrix.Count - i - 1][j] = rings[i][0];
-                }
-                // add first column in reverse
-                for (int j = matrix.Count - i - 2; j > i; j--)
-                {
-                    matrix[j][i] = rings[i][0];
-                }
-            }
+            // reassemble matrix circularly
         }
 
         public static void printMatrix(List<List<int>> matrix) =>
@@ -192,7 +205,8 @@ namespace main{
         }
         static List<List<int>> small_matrix() {
             List<List<int>> matrix = new List<List<int>>();
-            matrix.Add(new List<int>{1,2});
+            matrix.Add(new List<int>{1});
+            matrix.Add(new List<int>{2});
             return matrix;
         }
         static List<List<int>> empty_matrix() {
@@ -279,7 +293,7 @@ namespace main{
 
             matrix = small_matrix();
             rings = matrix_to_rings_first(matrix);
-            AssertEq(new List<List<int>>() { new List<int>() { 1, 2 } }, rings);
+            AssertEq(new List<List<int>>() { new List<int>() { 1 } }, rings);
 
             matrix = empty_matrix();
             rings = matrix_to_rings_first(matrix);
@@ -313,7 +327,7 @@ namespace main{
 
             matrix = small_matrix();
             rings = matrix_to_rings_first(matrix);
-            AssertEq(new List<List<int>>() { new List<int>() { 100 } }, rings);
+            AssertEq(new List<List<int>>() { new List<int>() { 100, 2 } }, rings);
 
             matrix = empty_matrix();
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => matrix_to_rings_first(matrix));
@@ -348,7 +362,7 @@ namespace main{
 
             matrix = small_matrix();
             rings = matrix_rotate(matrix);
-            AssertEq(new List<List<int>>() { new List<int>() { 2, 1 } }, rings);
+            AssertEq(new List<List<int>>() { new List<int>() { 2, 1 }}, rings);
 
 
         }
@@ -359,30 +373,41 @@ namespace main{
             MethodInfo ring_from_matrix_first = typeof(Program1).GetMethod("rings_from_matrix_first", BindingFlags.NonPublic | BindingFlags.Static)!;
             MethodInfo ring_from_matrix_second = typeof(Program1).GetMethod("rings_from_matrix_second", BindingFlags.NonPublic | BindingFlags.Static)!;
             MethodInfo rotate_rings = typeof(Program1).GetMethod("rotate_rings", BindingFlags.NonPublic | BindingFlags.Static)!;
-            MethodInfo reassemble_rings = typeof(Program1).GetMethod("reassemble_rings", BindingFlags.NonPublic | BindingFlags.Static)!;
+            MethodInfo matrix_from_rings = typeof(Program1).GetMethod("matrix_from_rings", BindingFlags.NonPublic | BindingFlags.Static)!;
             var matrix_rotate = (List<List<int>> matrix) => {
                 var depth = (int)depth_of_matrix.Invoke(null, new object[] { matrix })!;
                 var rings = (List<List<int>>)create_rings.Invoke(null, new object[] { depth })!;
                 rings = (List<List<int>>)ring_from_matrix_first.Invoke(null, new object[] { matrix, rings })!;
                 rings = (List<List<int>>)ring_from_matrix_second.Invoke(null, new object[] { matrix, rings })!;
                 rings = (List<List<int>>)rotate_rings.Invoke(null, new object[] { rings, 3 })!;
-                var result = (List<List<int>>)reassemble_rings.Invoke(null, new object[] { rings })!;
+                var result = (List<List<int>>)matrix_from_rings.Invoke(null, new object[] { matrix, rings })!;
                 return result;
             };
 
             var matrix = wide_matrix();
             var result = matrix_rotate(matrix);
-            AssertEq(new List<List<int>>() { new List<int>() { 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 11, 1, 2 },
-            new List<int>() { 15, 16, 17, 18, 19,12, 13, 14 } }, result);
+            AssertEq(new List<List<int>>() { new List<int>() {  4, 5, 6, 7, 8, 9, 10, 20, 30, 29 },
+            new List<int>() { 3, 15, 16, 17, 18, 19, 12, 13, 14, 28 },
+            new List<int>() { 2, 1, 11, 21, 22, 23, 24, 25, 26, 27 } }, result);
 
             matrix = long_matrix();
             result = matrix_rotate(matrix);
-            AssertEq(new List<List<int>>() { new List<int>() { 16, 13, 10, 7, 4, 1, 2, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 29, 28, 25, 22, 19 },
-            new List<int>() { 14, 17, 20, 23, 26, 5, 8, 11 } }, result);
+            AssertEq(new List<List<int>>() { new List<int>() { 6, 9, 12 },
+            new List<int>() { 6, 9, 12 },
+            new List<int>() { 3, 20, 15 },
+            new List<int>() { 2, 23, 18 },
+            new List<int>() { 1, 26, 21 },
+            new List<int>() { 4, 5, 24 },
+            new List<int>() { 7, 8, 27 },
+            new List<int>() { 10, 11, 30 },
+            new List<int>() { 13, 14, 29 },
+            new List<int>() { 16, 17, 28 },
+            new List<int>() { 19, 22, 25 }}, result);
 
             matrix = small_matrix();
             result = matrix_rotate(matrix);
-            AssertEq(new List<List<int>>() { new List<int>() { 2, 1 } }, result);
+            AssertEq(new List<List<int>>() { new List<int>() { 2 },
+            new List<int>() { 1 } }, result);
         }
     }
 
