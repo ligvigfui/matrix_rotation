@@ -95,35 +95,41 @@ namespace main{
         {
             var x = matrix[0].Count;
             var y = matrix.Count;
+            var pop = (List<int> list) => {
+                try {
+                    var last = list.Last();
+                    list.RemoveAt(list.Count - 1);
+                    return last;
+                } catch (Exception e) {
+                    println(e.Message);
+                    return 0;
+                }
+            };
             // reassemble matrix circularly
             for (int i = 0; i < rings.Count; i++)
             {
                 // add last row - 1 in reverse 
                 for (int j = i; x - 1 - i > j; j++)
                 {
-                    matrix[i][j] = rings[i].Last();
-                    rings[i].Remove(rings[i].Count - 1);
+                    matrix[y - i - 1][j] = pop(rings[i]);
                 }
 
                 // add last column - 1
                 for (int j = y - 1 - i; j > i; j--)
                 {
-                    matrix[j][x - i - 1] = rings[i].Last();
-                    rings[i].RemoveAt(rings[i].Count - 1);
+                    matrix[j][x - i - 1] = pop(rings[i]);
                 }
 
                 // add first row - 1
                 for (int j = x - i - 1; j > i; j--)
                 {
-                    matrix[y - i - 1][j] = rings[i].Last();
-                    rings[i].RemoveAt(rings[i].Count - 1);
+                    matrix[i][j] = pop(rings[i]);
                 }
-
+    
                 // add first column - 1
                 for (int j = i; j < y - i - 1; j++)
                 {
-                    matrix[j][i] = rings[i].Last();
-                    rings[i].RemoveAt(rings[i].Count - 1);
+                    matrix[j][i] = pop(rings[i]);
                 }
             }
             return matrix;
@@ -221,7 +227,7 @@ namespace main{
             var actual = b;
             for (int i = 0; i < expected.Count; i++)
             {
-                CollectionAssert.AreEqual(expected[i], actual[i], $"\nSub-list at index {i} did not match. Expected: {string.Join(",", expected[i])}. Actual: {string.Join(",", actual[i])}\n");
+                CollectionAssert.AreEqual(expected[i], actual[i], $"\nList at index {i} did not match. Expected: {Program1.matrixToString(expected)}. Actual: {Program1.matrixToString(actual)}\n");
             }
         }
         [TestMethod]
