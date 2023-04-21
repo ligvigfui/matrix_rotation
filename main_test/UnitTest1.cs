@@ -95,42 +95,42 @@ namespace main{
         {
             var x = matrix[0].Count;
             var y = matrix.Count;
-            var pop = (List<int> list) => {
-                try {
-                    var last = list.Last();
-                    list.RemoveAt(list.Count - 1);
-                    return last;
-                } catch (Exception e) {
-                    println(e.Message);
-                    return 0;
-                }
+            var popFirst = (List<int> list) => {
+                var first = list[0];
+                list.RemoveAt(0);
+                return first;
             };
             // reassemble matrix circularly
             for (int i = 0; i < rings.Count; i++)
             {
-                // add last row - 1 in reverse 
-                for (int j = i; x - 1 - i > j; j++)
-                {
-                    matrix[y - i - 1][j] = pop(rings[i]);
+                // add first column y - 2 - i -> i
+                for (int j = y - 2 - i; j >= i; j--) {
+                    try {
+                        matrix[j][i] = popFirst(rings[i]);
+                    } catch {}
                 }
 
-                // add last column - 1
-                for (int j = y - 1 - i; j > i; j--)
-                {
-                    matrix[j][x - i - 1] = pop(rings[i]);
+                // add first row i + 1 -> x - i - 1
+                for (int j = i + 1; j <= x - i - 1; j++) {
+                    try {
+                        matrix[i][j] = popFirst(rings[i]);
+                    } catch {}
                 }
 
-                // add first row - 1
-                for (int j = x - i - 1; j > i; j--)
-                {
-                    matrix[i][j] = pop(rings[i]);
+                // add last column i + 1 -> y - i - 1
+                for (int j = i + 1; j <= y - i - 1; j++) {
+                    try {
+                        matrix[j][x - i - 1] = popFirst(rings[i]);
+                    } catch {}
                 }
-    
-                // add first column - 1
-                for (int j = i; j < y - i - 1; j++)
-                {
-                    matrix[j][i] = pop(rings[i]);
+
+                // add last row in reverse x - i - 2 -> i
+                for (int j = x - i - 2; j >= i; j--) {
+                    try {
+                        matrix[y - i - 1][j] = popFirst(rings[i]);
+                    } catch {}
                 }
+                
             }
             return matrix;
         }
