@@ -58,17 +58,17 @@ namespace main{
             {
                 var from_end = matrix.Count - i - 1;
                 int indent = from_end < rings.Count - 1 ? from_end : rings.Count - 1;
-                //? add first numbers
+                // add first numbers
                 for (int j = 0; j < indent; j++)
                 {
                     rings[j].Insert(0, matrix[i][j]);
                 }
-                //? add last numbers
+                // add last numbers
                 for (int j = 0; j < indent; j++)
                 {
                     rings[j].Add(matrix[i][matrix[0].Count - j - 1]);
                 }
-                //! add middle section
+                // add middle section
                 for (int j = matrix[0].Count - indent - 1; j >= indent; j--)
                 {
                     rings[indent].Add(matrix[i][j]);
@@ -176,7 +176,7 @@ namespace main{
             };
             
             printMatrix(matrix);
-            matrixRotation(matrix, 2);
+            matrixRotation(matrix, 3);
             Console.WriteLine("rotated matrix:");
             printMatrix(matrix);
         }
@@ -211,10 +211,10 @@ namespace main{
         }
         static List<List<int>> big_matrix() {
             List<List<int>> matrix = new List<List<int>>();
-            for (int i = 0; i <10; i++) {
+            for (int i = 0; i <6; i++) {
                 matrix.Add(new List<int>());
-                for (int j = 0; j < 10 ; j++){
-                    matrix[i].Add(i*10 + j);
+                for (int j = 1; j < 7 ; j++){
+                    matrix[i].Add(i*6 + j);
                 }
             }
             return matrix;
@@ -252,7 +252,7 @@ namespace main{
             Assert.AreEqual(2, depth);
             matrix = big_matrix();
             depth = (int)depth_of_matrix.Invoke(null, new object[] { matrix })!;
-            Assert.AreEqual(5, depth);
+            Assert.AreEqual(3, depth);
             matrix = small_matrix();
             depth = (int)depth_of_matrix.Invoke(null, new object[] { matrix })!;
             Assert.AreEqual(1, depth);
@@ -424,6 +424,44 @@ namespace main{
             result = matrix_rotate(matrix);
             AssertEq(new List<List<int>>() { new List<int>() { 2 },
             new List<int>() { 1 } }, result);
+        }
+        [TestMethod]
+        public void Test_rotate_matrix() {
+
+            var matrix = wide_matrix();
+            Program1.matrixRotation(matrix, 3);
+            AssertEq(new List<List<int>>() { new List<int>() {  4, 5, 6, 7, 8, 9, 10, 20, 30, 29 },
+            new List<int>() { 3, 15, 16, 17, 18, 19, 12, 13, 14, 28 },
+            new List<int>() { 2, 1, 11, 21, 22, 23, 24, 25, 26, 27 } }, matrix);
+
+            matrix = long_matrix();
+            Program1.matrixRotation(matrix, 3);
+            AssertEq(new List<List<int>>() {
+            new List<int>() { 6, 9, 12 },
+            new List<int>() { 3, 14, 15 },
+            new List<int>() { 2, 17, 18 },
+            new List<int>() { 1, 20, 21 },
+            new List<int>() { 4, 23, 24 },
+            new List<int>() { 7, 26, 27 },
+            new List<int>() { 10, 5, 30 },
+            new List<int>() { 13, 8, 29 },
+            new List<int>() { 16, 11, 28 },
+            new List<int>() { 19, 22, 25 }}, matrix);
+
+            matrix = small_matrix();
+            Program1.matrixRotation(matrix, 3);
+            AssertEq(new List<List<int>>() { new List<int>() { 2 },
+            new List<int>() { 1 } }, matrix);
+
+            matrix = big_matrix();
+            Program1.matrixRotation(matrix, 3);
+            AssertEq(new List<List<int>>() {
+            new List<int>() { 4, 5, 6, 12, 18, 24 },
+            new List<int>() { 3, 11, 17, 23, 29, 30 },
+            new List<int>() { 2, 10, 21, 15, 28, 36 },
+            new List<int>() { 1, 9, 22, 16, 27, 35 },
+            new List<int>() { 7, 8, 14, 20, 26, 34 },
+            new List<int>() { 13, 19, 25, 31, 32, 33 } }, matrix);
         }
     }
 
