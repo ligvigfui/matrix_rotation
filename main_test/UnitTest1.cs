@@ -103,32 +103,40 @@ namespace main{
             // reassemble matrix circularly
             for (int i = 0; i < rings.Count; i++)
             {
-                // add first column y - 2 - i -> i
-                for (int j = y - 2 - i; j >= i; j--) {
-                    try {
+                // if the remaining matrix is a single row or column add it and break
+                if (x - 2 * i == 1){
+                    println("single column");
+                    for (int j = i; j < y - i; j++){
                         matrix[j][i] = popFirst(rings[i]);
-                    } catch {}
+                    }
+                    break;
+                }
+                if (y - 2 * i == 1){
+                    println("single row");
+                    for (int j = i; j < x - i; j++){
+                        matrix[i][j] = popFirst(rings[i]);
+                    }
+                    break;
                 }
 
-                // add first row i + 1 -> x - i - 1
-                for (int j = i + 1; j <= x - i - 1; j++) {
-                    try {
-                        matrix[i][j] = popFirst(rings[i]);
-                    } catch {}
+                // add first column y - 2 - i -> i - 1
+                for (int j = y - 2 - i; j > i; j--) {
+                    matrix[j][i] = popFirst(rings[i]);
+                }
+
+                // add first row i -> x - i - 1
+                for (int j = i; j <= x - i - 1; j++) {
+                    matrix[i][j] = popFirst(rings[i]);
                 }
 
                 // add last column i + 1 -> y - i - 1
                 for (int j = i + 1; j <= y - i - 1; j++) {
-                    try {
-                        matrix[j][x - i - 1] = popFirst(rings[i]);
-                    } catch {}
+                    matrix[j][x - i - 1] = popFirst(rings[i]);
                 }
 
                 // add last row in reverse x - i - 2 -> i
                 for (int j = x - i - 2; j >= i; j--) {
-                    try {
-                        matrix[y - i - 1][j] = popFirst(rings[i]);
-                    } catch {}
+                    matrix[y - i - 1][j] = popFirst(rings[i]);
                 }
                 
             }
@@ -148,6 +156,7 @@ namespace main{
             
             rings = rotate_rings(rings, r);
             // reassemble matrix circularly
+            matrix = matrix_from_rings(matrix, rings);
         }
 
         public static void printMatrix(List<List<int>> matrix) =>
@@ -161,13 +170,14 @@ namespace main{
         public static void Main()
         {
             var matrix = new List<List<int>> {
-                new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
-                new List<int> { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 },
-                new List<int> { 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 },
+                new List<int> { 1, 2, 3, 4 },
+                new List<int> { 5, 6, 7, 8 },
+                new List<int> { 9, 10, 11, 12 },
             };
+            
             printMatrix(matrix);
-            matrixRotation(matrix, 0);
-            Console.WriteLine("Rotated matrix");
+            matrixRotation(matrix, 2);
+            Console.WriteLine("rotated matrix:");
             printMatrix(matrix);
         }
     }
@@ -227,7 +237,7 @@ namespace main{
             var actual = b;
             for (int i = 0; i < expected.Count; i++)
             {
-                CollectionAssert.AreEqual(expected[i], actual[i], $"\nList at index {i} did not match. Expected: {Program1.matrixToString(expected)}. Actual: {Program1.matrixToString(actual)}\n");
+                CollectionAssert.AreEqual(expected[i], actual[i], $"\nList at index {i} did not match. Expected:\n{Program1.matrixToString(expected)}. Actual:\n{Program1.matrixToString(actual)}\n");
             }
         }
         [TestMethod]
@@ -359,7 +369,7 @@ namespace main{
             var matrix = wide_matrix();
             var rings = matrix_rotate(matrix);
             AssertEq(new List<List<int>>() { new List<int>() { 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 11, 1, 2 },
-            new List<int>() { 15, 16, 17, 18, 19,12, 13, 14 } }, rings);
+            new List<int>() { 15, 16, 17, 18, 19, 12, 13, 14 } }, rings);
 
             matrix = long_matrix();
             rings = matrix_rotate(matrix);
@@ -398,16 +408,16 @@ namespace main{
 
             matrix = long_matrix();
             result = matrix_rotate(matrix);
-            AssertEq(new List<List<int>>() { new List<int>() { 6, 9, 12 },
+            AssertEq(new List<List<int>>() {
             new List<int>() { 6, 9, 12 },
-            new List<int>() { 3, 20, 15 },
-            new List<int>() { 2, 23, 18 },
-            new List<int>() { 1, 26, 21 },
-            new List<int>() { 4, 5, 24 },
-            new List<int>() { 7, 8, 27 },
-            new List<int>() { 10, 11, 30 },
-            new List<int>() { 13, 14, 29 },
-            new List<int>() { 16, 17, 28 },
+            new List<int>() { 3, 14, 15 },
+            new List<int>() { 2, 17, 18 },
+            new List<int>() { 1, 20, 21 },
+            new List<int>() { 4, 23, 24 },
+            new List<int>() { 7, 26, 27 },
+            new List<int>() { 10, 5, 30 },
+            new List<int>() { 13, 8, 29 },
+            new List<int>() { 16, 11, 28 },
             new List<int>() { 19, 22, 25 }}, result);
 
             matrix = small_matrix();
