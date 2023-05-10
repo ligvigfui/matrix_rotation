@@ -6,8 +6,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 					
 namespace main{
-    public static class Program1
-    {
+    public static class Program1{
         public static void println(String s) => Console.WriteLine(s);
         
         static List<List<int>> create_rings(int depth) {
@@ -51,11 +50,9 @@ namespace main{
             return rings;
         }
 
-        static List<List<int>> rings_from_matrix_second(List<List<int>> matrix, List<List<int>> rings)
-        {
+        static List<List<int>> rings_from_matrix_second(List<List<int>> matrix, List<List<int>> rings){
             // disassamble it row by row second half
-            for (int i = (matrix.Count + 1) / 2; i < matrix.Count; i++)
-            {
+            for (int i = (matrix.Count + 1) / 2; i < matrix.Count; i++){
                 var from_end = matrix.Count - i - 1;
                 int indent = from_end < rings.Count - 1 ? from_end : rings.Count - 1;
                 // add first numbers
@@ -318,8 +315,7 @@ namespace main{
         }
         
         [TestMethod]
-        public void Test_create_rings_second_half()
-        {
+        public void Test_create_rings_second_half(){
             MethodInfo create_rings = typeof(Program1).GetMethod("create_rings", BindingFlags.NonPublic | BindingFlags.Static)!;
             MethodInfo depth_of_matrix = typeof(Program1).GetMethod("depth_of_matrix", BindingFlags.NonPublic | BindingFlags.Static)!;
             MethodInfo ring_from_matrix_second = typeof(Program1).GetMethod("rings_from_matrix_second", BindingFlags.NonPublic | BindingFlags.Static)!;
