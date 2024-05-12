@@ -249,16 +249,16 @@ public class UnitTests
         }
 
         var matrix = WideTestMatrix();
-        var result = RotateMatrix(matrix);
+        RotateMatrix(matrix);
         AssertEq(
             [
                 [4, 5, 6, 7, 8, 9, 10, 20, 30, 29],
                 [3, 15, 16, 17, 18, 19, 12, 13, 14, 28],
                 [2, 1, 11, 21, 22, 23, 24, 25, 26, 27]
-            ], result);
+            ], matrix);
 
         matrix = LongTestMatrix();
-        result = RotateMatrix(matrix);
+        RotateMatrix(matrix);
         AssertEq(
             [
                 [6, 9, 12],
@@ -271,11 +271,11 @@ public class UnitTests
                 [13, 8, 29],
                 [16, 11, 28],
                 [19, 22, 25]
-            ], result);
+            ], matrix);
 
         matrix = SmallTestMatrix();
-        result = RotateMatrix(matrix);
-        AssertEq([ [2], [1] ], result);
+        RotateMatrix(matrix);
+        AssertEq([ [2], [1] ], matrix);
     }
 
     [TestMethod]
